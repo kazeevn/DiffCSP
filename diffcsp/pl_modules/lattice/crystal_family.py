@@ -47,7 +47,7 @@ class CrystalFamily(nn.Module):
         elif 143 <= spacegroup <= 194:
             pos = [0,1,2,3]
             mask[pos] = 0.
-            bias[0] = -0.25 * np.log(3) * np.sqrt(2)
+            bias[0] = -0.25 * np.log(3) * np.sqrt(2) # As the basis is normalized, the coefficient here should additionally multiply the original norm of B1, that is $\sqrt{2}$
 
         elif 75 <= spacegroup <= 142:
             pos = [0,1,2,3]
