@@ -45,7 +45,14 @@ class BaseModule(pl.LightningModule):
         scheduler = hydra.utils.instantiate(
             self.hparams.optim.lr_scheduler, optimizer=opt
         )
-        return {"optimizer": opt, "lr_scheduler": scheduler, "monitor": "val_loss"}
+
+        scheduler_dict = {
+            "scheduler": scheduler,
+            "monitor": "val_loss",
+            'strict': False
+        }
+
+        return {"optimizer": opt, "lr_scheduler": scheduler_dict}
 
 
 ### Model definition

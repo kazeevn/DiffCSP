@@ -41,7 +41,7 @@ class CrystDataset(Dataset):
 
     def preprocess(self, save_path, preprocess_workers, prop):
         if os.path.exists(save_path):
-            self.cached_data = torch.load(save_path)
+            self.cached_data = torch.load(save_path, weights_only=False)
         else:
             cached_data = preprocess(
             self.path,
@@ -153,7 +153,7 @@ class TensorCrystDataset(Dataset):
 
 
 
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
+@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default", version_base="1.1")
 def main(cfg: omegaconf.DictConfig):
     from torch_geometric.data import Batch
     from diffcsp.common.data_utils import get_scaler_from_data_list

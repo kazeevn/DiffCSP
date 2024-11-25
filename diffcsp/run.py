@@ -43,6 +43,7 @@ def build_callbacks(cfg: DictConfig) -> List[Callback]:
                 mode=cfg.train.monitor_metric_mode,
                 patience=cfg.train.early_stopping.patience,
                 verbose=cfg.train.early_stopping.verbose,
+                check_on_train_epoch_end=False
             )
         )
 
@@ -77,7 +78,6 @@ def run(cfg: DictConfig) -> None:
             f"Forcing debugger friendly configuration!"
         )
         # Debuggers don't like GPUs nor multiprocessing
-        cfg.train.pl_trainer.gpus = 0
         cfg.data.datamodule.num_workers.train = 0
         cfg.data.datamodule.num_workers.val = 0
         cfg.data.datamodule.num_workers.test = 0
@@ -151,8 +151,6 @@ def run(cfg: DictConfig) -> None:
         callbacks=callbacks,
         deterministic=cfg.train.deterministic,
         check_val_every_n_epoch=cfg.logging.val_check_interval,
-        progress_bar_refresh_rate=cfg.logging.progress_bar_refresh_rate,
-        resume_from_checkpoint=ckpt,
         **cfg.train.pl_trainer,
     )
 
@@ -169,10 +167,12 @@ def run(cfg: DictConfig) -> None:
         wandb_logger.experiment.finish()
 
 
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
+@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default", version_base="1.1")
 def main(cfg: omegaconf.DictConfig):
     run(cfg)
 
 
 if __name__ == "__main__":
+    if torch.cuda.is_available():
+        torch.set_float32_matmul_precision("high")
     main()

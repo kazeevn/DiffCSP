@@ -40,7 +40,14 @@ class BaseModule(pl.LightningModule):
         scheduler = hydra.utils.instantiate(
             self.hparams.optim.lr_scheduler, optimizer=opt
         )
-        return {"optimizer": opt, "lr_scheduler": scheduler, "monitor": "val_loss"}
+
+        scheduler_dict = {
+            "scheduler": scheduler,
+            "monitor": "val_loss",
+            'strict': False
+        }
+
+        return {"optimizer": opt, "lr_scheduler": scheduler_dict}
 
 
 class CrystGNN_Supervise(BaseModule):
@@ -133,7 +140,7 @@ class CrystGNN_Supervise(BaseModule):
 
 
 
-@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default")
+@hydra.main(config_path=str(PROJECT_ROOT / "conf"), config_name="default", version_base="1.1")
 def main(cfg: omegaconf.DictConfig):
     model: pl.LightningModule = hydra.utils.instantiate(
         cfg.model,
